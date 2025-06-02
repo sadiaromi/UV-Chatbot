@@ -20,9 +20,6 @@ Built on `Gemini 2.0 Flash Lite`, making responses fast and context-aware.
 
 ---
 
-
----
-
 ## 🔧 Tech Stack
 
 - 🧠 **Google Gemini API** (via `google-generativeai`)
@@ -41,7 +38,5 @@ run the chatbot with the following command:
 chainlit run app.py
 ---
 
-## 👩‍💻 Created by Roman Sadia
-“Helping students learn smarter — one message at a time!” 📚✨
 
 
