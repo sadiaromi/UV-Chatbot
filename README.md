@@ -35,7 +35,7 @@ Built on `Gemini 2.0 Flash Lite`, making responses fast and context-aware.
 Run the chatbot with the following command:
 
 ```bash
-chainlit run app.py
+chainlit run chatbot.py -w
 
 
 
