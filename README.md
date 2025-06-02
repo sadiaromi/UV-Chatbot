@@ -39,8 +39,9 @@ run the chatbot with the following command:
 
 ```bash
 chainlit run app.py
+---
 
-##👩‍💻 Created by Roman Sadia
+## 👩‍💻 Created by Roman Sadia
 “Helping students learn smarter — one message at a time!” 📚✨
 
 
