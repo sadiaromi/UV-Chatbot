@@ -1,38 +1,63 @@
 import os
 from dotenv import load_dotenv
 import chainlit as cl
-import google.generativeai as genai
+
+from agents import Agent, Runner, AsyncOpenAI, OpenAIChatCompletionsModel
 
 # Load .env
 load_dotenv()
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Load API key
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GOOGLE_API_KEY)
+if not GEMINI_API_KEY:
+    raise ValueError("❗ GEMINI_API_KEY not found in .env")
 
-model = genai.GenerativeModel(model_name="models/gemini-2.0-flash-lite")
+# Setup Gemini using OpenAI-compatible format
+external_client = AsyncOpenAI(
+    api_key=GEMINI_API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/"
+)
 
+model = OpenAIChatCompletionsModel(
+    model="gemini-2.0-flash",
+    openai_client=external_client
+)
+
+# Create Agent
+agent = Agent(
+    name="StudyBuddy",
+    model=model
+)
+
+runner = Runner()
 
 @cl.on_message
-async def handle_message(message: cl.Message):
+async def on_message(message: cl.Message):
     user_input = message.content.strip().lower()
 
-    # Study Buddy prompt selector
     if "quiz" in user_input:
-        prompt = f"Create a short quiz with 30 questions on the topic: {user_input}"
+        prompt = f"Create a quiz with 30 questions on the topic: {user_input}"
     elif "tip" in user_input or "advice" in user_input:
-        prompt = f"Give useful study tips for students related to: {user_input}"
+        prompt = f"Give useful study tips for: {user_input}"
     elif "motivation" in user_input or "quote" in user_input:
-        prompt = "Share an inspiring motivational quote for students who are studying hard."
+        prompt = "Share a motivational quote for students."
     elif "exam" in user_input or "prepare" in user_input:
-        prompt = f"Explain how to prepare effectively for exams related to: {user_input}"
+        prompt = f"How to prepare for exams on: {user_input}"
     elif "note" in user_input or "summary" in user_input:
-        prompt = f"Provide a concise summary or notes on the topic: {user_input}"
+        prompt = f"Provide a summary of: {user_input}"
     else:
-        prompt = f"Answer this study-related question creatively and clearly: {user_input}"
+        prompt = f"Answer this student question: {user_input}"
 
     try:
-        response = model.generate_content(prompt)
-        await cl.Message(content=response.text).send()
+        # Run agent
+        result = await runner.run(
+            input=prompt,
+            starting_agent=agent
+        )
+
+       
+        output = result.final_output  # ✅ This shows just the model's response
+
+        await cl.Message(content=output).send()
+
     except Exception as e:
         await cl.Message(content=f"❗ Error: {str(e)}").send()

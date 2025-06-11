@@ -8,5 +8,6 @@ dependencies = [
     "chainlit>=2.5.5",
     "generativeai>=0.0.1",
     "google>=3.0.0",
+    "openai-agents>=0.0.17",
     "python-dotenv>=1.1.0",
 ]
